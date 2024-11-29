@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .movie-list {
+            list-style: none;
+            padding: 0;
+        }
+        .movie-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .movie-list li.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .recommendations {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Movie Recommendation System</h1>
+    <p>Select one or more movies you like:</p>
+    <ul class="movie-list" id="movieList"></ul>
+    <button id="submitBtn">Get Recommendations</button>
+
+    <div class="recommendations" id="recommendations">
+        <h2>Recommended Movies:</h2>
+        <ul id="recommendationList"></ul>
+    </div>
+
+    <script>
+        // Example movie list - Replace with API call to fetch movies dynamically
+        const movies = [
+            "Inception", "Titanic", "The Dark Knight", "Avengers: Endgame", "Spider-Man 3"
+        ];
+
+        const movieListElement = document.getElementById('movieList');
+        const recommendationsElement = document.getElementById('recommendations');
+        const recommendationListElement = document.getElementById('recommendationList');
+
+        // Render movie options
+        movies.forEach((movie, index) => {
+            const li = document.createElement('li');
+            li.textContent = movie;
+            li.dataset.index = index;
+            li.addEventListener('click', () => li.classList.toggle('selected'));
+            movieListElement.appendChild(li);
+        });
+
+        // Handle form submission
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const selectedMovies = Array.from(document.querySelectorAll('.movie-list li.selected'))
+                .map(li => li.textContent);
+
+            if (selectedMovies.length === 0) {
+                alert('Please select at least one movie!');
+                return;
+            }
+
+            // Fetch recommendations from backend
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selectedMovies })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Display recommendations
+                    recommendationListElement.innerHTML = '';
+                    data.recommendations.forEach(movie => {
+                        const li = document.createElement('li');
+                        li.textContent = movie.title + ` (Similarity: ${movie.similarity.toFixed(2)})`;
+                        recommendationListElement.appendChild(li);
+                    });
+                    recommendationsElement.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching recommendations:', error);
+                    alert('Failed to fetch recommendations. Please try again later.');
+                });
+        });
+    </script>
+</body>
+</html>
