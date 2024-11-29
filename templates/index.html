@@ -18,15 +18,23 @@
         .movie-list {
             list-style: none;
             padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .movie-list li {
-            margin: 10px 0;
+            margin: 10px;
             padding: 10px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 5px;
-            display: inline-block;
             cursor: pointer;
+            width: 150px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .movie-list li:hover {
+            transform: scale(1.05);
         }
         .movie-list li.selected {
             background-color: #007bff;
@@ -50,6 +58,26 @@
             margin-top: 20px;
             display: none;
         }
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+        .recommendations li {
+            margin: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .recommendations img {
+            width: 50px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        .overview {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -64,9 +92,34 @@
     </div>
 
     <script>
-        // Example movie list - Replace with API call to fetch movies dynamically
+        // Example movie list with actual poster and overview data
         const movies = [
-            "Inception", "Titanic", "The Dark Knight", "Avengers: Endgame", "Spider-Man 3"
+            {
+                title: "Inception",
+                poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+                overview: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O."
+            },
+            {
+                title: "The Matrix",
+                poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+                overview: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers."
+    
+            },
+            {
+                title: "The Dark Knight",
+                poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                overview: "Batman sets out to dismantle the remaining criminal organizations that plague Gotham."
+            },
+            {
+                title: "Brave",
+                poster: "https://image.tmdb.org/t/p/w500/fg57nIBn2xQw8JZKIX6AzMa3pEp.jpg",
+                overview: "Determined to make her own path in life, Princess Merida defies a custom that brings chaos to her kingdom."
+            },
+            {
+                title: "Spider-Man 3",
+                poster: "https://image.tmdb.org/t/p/w500/2jLxKF73SAPkyhIWrnv67IH7kJ1.jpg",
+                overview: "Peter Parker's symbiote suit causes him to act aggressively and strain his relationships."
+            }
         ];
 
         const movieListElement = document.getElementById('movieList');
@@ -76,7 +129,9 @@
         // Render movie options
         movies.forEach((movie, index) => {
             const li = document.createElement('li');
-            li.textContent = movie;
+            li.innerHTML = `
+                <img src="${movie.poster}" alt="${movie.title}" style="width:100%; border-radius:5px;"><br>${movie.title}
+            `;
             li.dataset.index = index;
             li.addEventListener('click', () => li.classList.toggle('selected'));
             movieListElement.appendChild(li);
@@ -85,20 +140,20 @@
         // Handle form submission
         document.getElementById('submitBtn').addEventListener('click', () => {
             const selectedMovies = Array.from(document.querySelectorAll('.movie-list li.selected'))
-                .map(li => li.textContent);
+                .map(li => movies[li.dataset.index]);
 
             if (selectedMovies.length === 0) {
                 alert('Please select at least one movie!');
                 return;
             }
 
-            // Fetch recommendations from backend
+            // Example API call - Replace with actual backend URL
             fetch('/recommend', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ selectedMovies })
+                body: JSON.stringify({ selectedMovies: selectedMovies.map(movie => movie.title) })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -106,7 +161,12 @@
                     recommendationListElement.innerHTML = '';
                     data.recommendations.forEach(movie => {
                         const li = document.createElement('li');
-                        li.textContent = movie.title + ` (Similarity: ${movie.similarity.toFixed(2)})`;
+                        li.innerHTML = `
+                            <div>
+                                <strong>${movie.title}</strong><br>
+                                <p class="overview">${movie.overview}</p>
+                            </div>
+                        `;
                         recommendationListElement.appendChild(li);
                     });
                     recommendationsElement.style.display = 'block';
