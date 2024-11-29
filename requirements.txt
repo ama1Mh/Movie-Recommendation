@@ -1,5 +1,5 @@
-pip install flask
-pip install numpy
-pip install pandas
-pip install scikit-learn
-pip install gunicorn
+Flask==2.2.5
+numpy==1.24.3
+pandas==2.1.1
+scikit-learn==1.4.2
+gunicorn==21.2.0
