@@ -10,14 +10,27 @@ movies_df = pd.read_csv("cleaned_movies.csv")
 movie_embeddings = np.load("movie_embeddings.npy")  # Precomputed embeddings
 
 # Recommendation logic
+# Recommendation logic
 def recommend_movies(selected_movies, top_n=5):
+    # Find indices of selected movies
     selected_indices = [movies_df[movies_df['title'] == title].index[0] for title in selected_movies]
+    
+    # Get embeddings for the selected movies
     selected_embeddings = movie_embeddings[selected_indices]
+    
+    # Compute similarity scores
     similarity_scores = cosine_similarity(selected_embeddings, movie_embeddings).mean(axis=0)
+    
+    # Get indices of the most similar movies (excluding the selected ones)
     similar_indices = similarity_scores.argsort()[-(top_n + len(selected_movies)):-len(selected_movies)][::-1]
-    recommendations = movies_df.iloc[similar_indices][['title']].copy()
+    
+    # Retrieve recommended movies and their details
+    recommendations = movies_df.iloc[similar_indices][['title', 'overview']].copy()
     recommendations['similarity'] = similarity_scores[similar_indices]
+    
+    # Convert to a list of dictionaries
     return recommendations.to_dict(orient='records')
+
 
 # API endpoint
 @app.route('/', methods=['GET'])
