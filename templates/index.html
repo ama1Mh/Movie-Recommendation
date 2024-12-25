@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <p>Select one or more movies you like or search for a specific movie:</p>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchMovie" placeholder="Search for a movie...">
+            <button id="searchButton" class="action-button">Search</button>
+        </div>
+
+        <!-- Shuffle Movies Button -->
+        <button id="shuffleMovies" class="action-button">Shuffle Movies</button>
+
+        <!-- Movie Selection Grid -->
+        <div id="movieSelection" class="movie-grid"></div>
+        
+        <!-- Get Recommendations Button -->
+        <button id="getRecommendations" class="action-button">Get Recommendations</button>
+
+        <!-- Recommendation Section -->
+        <div id="recommendations">
+            <h2>Recommended Movies</h2>
+            <div id="recommendationGrid" class="movie-grid"></div>
+        </div>
+    </div>
+    <script src="/static/js/scripts.js"></script>
+</body>
+</html>
